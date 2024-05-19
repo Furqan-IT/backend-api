@@ -3,6 +3,9 @@ const bcrypt = require("bcryptjs");
 
 // Define the user schema
 const userSchema = new mongoose.Schema({
+  system_id: {
+    type: String,
+  },
   userId: {
     type: String,
   },
@@ -36,11 +39,17 @@ const userSchema = new mongoose.Schema({
   },
   userType: {
     type: String,
-    default: "user",
+  },
+  balance: {
+    type: String,
+    default: 0,
   },
   created_Date: {
     type: Date,
     default: Date.now,
+  },
+  fcmToken: {
+    type: String,
   },
 });
 
@@ -49,7 +58,7 @@ userSchema.methods.matchPassword = async function (enteredPassword) {
 };
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified()) {
+  if (!this.isModified("password")) {
     next();
   }
   const salt = await bcrypt.genSalt(10);
